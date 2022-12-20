@@ -42,9 +42,11 @@ const replaceTemplate = function (temp, product) {
 //////////////////////////////////////////////
 // SERVER
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
+  const { query, pathname } = url.parse(req.url, true);
+
   // Overview Page
-  if (pathName === "/" || pathName === "/overview") {
+  // we are actually reading the template file and then returning that from the server in a state where plcaeholders are replaced and then browser is showing us that page.
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(200, { "Content-type": "text/html" });
 
     const cardsHtml = dataObj
@@ -55,11 +57,15 @@ const server = http.createServer((req, res) => {
     res.end(output);
   }
   // Product Page
-  if (pathName === "/product") {
-    res.end("This is the PRODUCT");
+  if (pathname === "/product") {
+    console.log(query);
+    res.writeHead(200, { "Content-type": "text/html" });
+    const product = dataObj[query.id];
+    const output = replaceTemplate(productTemplate, product);
+    res.end(output);
   }
   // API
-  if (pathName === "/api") {
+  if (pathname === "/api") {
     res.writeHead(200, { "Content-type": "application/json" });
     res.end(data);
   }
